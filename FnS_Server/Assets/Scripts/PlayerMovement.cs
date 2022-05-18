@@ -30,10 +30,10 @@ public class PlayerMovement : MonoBehaviour
             inputDirection.y -= 1;
         
         if(inputs[2])
-            inputDirection.x += 1;
+            inputDirection.x -= 1;
 
         if(inputs[3])
-            inputDirection.x -= 1;
+            inputDirection.x += 1;
 
         MovePlayer(inputDirection);
     }
