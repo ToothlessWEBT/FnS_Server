@@ -8,7 +8,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Player player;
     private Rigidbody2D rb;
 
-    [SerializeField] private float moveSpeed;
+    [SerializeField] private float moveSpeed, dashSpeed, dashLength, dashCooldown;
+
+    private bool canDash = false, allowedToDash = true, dashing = false;
 
     private bool[] inputs;
 
@@ -30,17 +32,27 @@ public class PlayerMovement : MonoBehaviour
             inputDirection.y -= 1;
         
         if(inputs[2])
-            inputDirection.x -= 1;
+            inputDirection.x += 1;
 
         if(inputs[3])
-            inputDirection.x += 1;
+            inputDirection.x -= 1;
 
         MovePlayer(inputDirection);
     }
 
     private void MovePlayer(Vector2 inputDir)
     {
-        rb.velocity = Vector2.Lerp(rb.velocity, inputDir.normalized * moveSpeed * Time.fixedDeltaTime, 0.8f);
+        if(!player.isAlive) return;
+
+        if(canDash && allowedToDash)
+        {
+            allowedToDash = false;
+            dashing = true;
+            rb.velocity = Vector2.Lerp(rb.velocity, inputDir.normalized * dashSpeed * Time.fixedDeltaTime, 0.8f);
+
+            Invoke(nameof(StopDashing), dashLength);
+        }
+        if(!dashing) rb.velocity = Vector2.Lerp(rb.velocity, inputDir.normalized * moveSpeed * Time.fixedDeltaTime, 0.8f);
     
         SendMovement();
     }
@@ -48,6 +60,13 @@ public class PlayerMovement : MonoBehaviour
     public void SetInputs(bool[] clientInputs)
     {
         inputs = clientInputs;
+    }
+
+    public void AllowDash()
+    {
+        canDash = true;
+
+        Invoke(nameof(StopDash), 0.3f);
     }
 
     private void SendMovement()
@@ -58,4 +77,14 @@ public class PlayerMovement : MonoBehaviour
         NetworkManager.Singleton.Server.SendToAll(message);
     }
 
+    private void StopDash() => canDash = false;
+
+    private void AllowDashing() => allowedToDash = true;
+
+    private void StopDashing()
+    {
+        dashing = false;
+
+        Invoke(nameof(AllowDashing), dashCooldown);
+    }
 }

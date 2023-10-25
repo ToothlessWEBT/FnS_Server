@@ -6,12 +6,34 @@ public enum ServerToClientId : ushort
 {
     playerSpawned = 1,
     playerMovement,
+    weaponSpawn,
+    weaponPickedUp,
+    swichedSlots,
+    bulletSpawn,
+    bulletMove,
+    bulletKill,
+    enemySpawned,
+    enemyMove,
+    enemyKill,
+    startGame,
+    killPlayer,
+    respawnPlayer,
+    gameOver,
+    damagePlayer,
+    flipEnemy,
+    playerFacingDir,
 }
 
 public enum ClientToServerId : ushort
 {
     name = 1,
-    input,
+    moveInput,
+    playerAttemptPickUp,
+
+    playerShoot,
+    playerRotate,
+    switchWeaponSlots,
+    dashing,
 }
 
 public class NetworkManager : MonoBehaviour
@@ -63,6 +85,8 @@ public class NetworkManager : MonoBehaviour
     {
         Server.Stop();
     }
+
+    public void StopServer() => Server.Stop();
 
     private void PlayerLeft(object sender, ClientDisconnectedEventArgs e)
     {

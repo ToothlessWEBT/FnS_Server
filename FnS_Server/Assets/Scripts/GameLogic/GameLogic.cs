@@ -22,10 +22,7 @@ public class GameLogic : MonoBehaviour
         }
     }
 
-    public GameObject PlayerPrefab => playerPrefab;
-
-    [Header("Prefabs")]
-    [SerializeField] private GameObject playerPrefab;
+    public GameObject PlayerPrefab;
 
     private void Awake()
     {
